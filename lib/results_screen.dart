@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:quiz_app/data/questions.dart';
 import 'package:quiz_app/models/questions_summary.dart';
+import 'package:quiz_app/quiz.dart';
 
 class ResultsScreen extends StatelessWidget {
-  const ResultsScreen(
-      {super.key, required this.resultsQuiz, required this.chosenAnswers});
-
-  final void Function() resultsQuiz;
+  const ResultsScreen({
+    super.key,
+    required this.chosenAnswers,
+  });
 
   final List<String> chosenAnswers;
 
@@ -28,7 +30,13 @@ class ResultsScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
+    final summaryData = getSummaryData();
+    final numTotalQuestions = questions.length;
+    final numCorrectQuestions = summaryData.where((data) {
+      return data['user_answer'] == data['correct_answer'];
+    }).length;
+
     return SizedBox(
       width: double.infinity,
       child: Container(
@@ -36,19 +44,42 @@ class ResultsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Hehe'),
+            Text(
+              'You answered $numCorrectQuestions out of $numTotalQuestions questions correctly!',
+              style: GoogleFonts.lato(
+                color: const Color.fromARGB(255, 255, 237, 183),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(
               height: 30,
             ),
-            QuestionsSummary(
-              getSummaryData(),
-            ),
+            QuestionsSummary(summaryData),
             const SizedBox(
               height: 30,
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text('Restart Quiz!'),
+            TextButton.icon(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.amber,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Quiz()),
+                );
+              },
+              label: Text(
+                'Restart Quiz!',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 255, 237, 183),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
